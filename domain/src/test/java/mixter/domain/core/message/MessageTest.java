@@ -2,10 +2,10 @@ package mixter.domain.core.message;
 
 import mixter.domain.Event;
 import mixter.domain.SpyEventPublisher;
-import mixter.domain.identity.UserId;
+import mixter.domain.core.message.events.MessageDeleted;
 import mixter.domain.core.message.events.MessageQuacked;
 import mixter.domain.core.message.events.MessageRequacked;
-import mixter.domain.core.message.events.MessageDeleted;
+import mixter.domain.identity.UserId;
 import org.junit.Before;
 import org.junit.Test;
 
