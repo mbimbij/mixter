@@ -6,12 +6,13 @@ import mixter.domain.DecisionProjectionBase;
 import mixter.domain.Event;
 import mixter.domain.EventPublisher;
 import mixter.domain.core.message.events.MessageDeleted;
-import mixter.domain.identity.UserId;
 import mixter.domain.core.message.events.MessageQuacked;
 import mixter.domain.core.message.events.MessageRequacked;
+import mixter.domain.identity.UserId;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @Aggregate
@@ -19,11 +20,12 @@ public class Message {
     private DecisionProjection projection;
 
     public Message(List<Event> history) {
-        projection=new DecisionProjection(history);
+        projection = new DecisionProjection(history);
     }
 
     public static MessageId quack(UserId authorId, String message, EventPublisher eventPublisher) {
-        MessageId messageId = MessageId.generate();;
+        MessageId messageId = MessageId.generate();
+        ;
         eventPublisher.publish(new MessageQuacked(messageId, message, authorId));
         return messageId;
     }
@@ -37,13 +39,17 @@ public class Message {
     }
 
     public void delete(UserId authorId, EventPublisher eventPublisher) {
+        if (!Objects.equals(projection.getAuthor(), authorId)) {
+            return;
+        }
         eventPublisher.publish(new MessageDeleted(projection.getId()));
     }
 
-  @Projection
+    @Projection
     private class DecisionProjection extends DecisionProjectionBase {
         private MessageId id;
-        public Set<UserId> publishers=new HashSet<>();
+        public Set<UserId> publishers = new HashSet<>();
+        private UserId author;
 
         public DecisionProjection(List<Event> history) {
             super.register(MessageQuacked.class, this::apply);
@@ -53,6 +59,7 @@ public class Message {
 
         private void apply(MessageQuacked event) {
             id = event.getMessageId();
+            author = event.getAuthorId();
             publishers.add(event.getAuthorId());
         }
 
@@ -62,6 +69,10 @@ public class Message {
 
         public MessageId getId() {
             return id;
+        }
+
+        public UserId getAuthor() {
+            return author;
         }
     }
 }
