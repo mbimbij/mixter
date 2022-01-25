@@ -10,12 +10,12 @@
         <version>1.0-SNAPSHOT</version>
     </parent>
     <artifactId>mixter-domain</artifactId>
+    <packaging>jar</packaging>
     <properties>
 
     </properties>
 
     <dependencies>
-
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -27,12 +27,4 @@
             <scope>test</scope>
         </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 </project>

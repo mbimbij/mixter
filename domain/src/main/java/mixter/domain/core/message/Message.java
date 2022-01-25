@@ -35,7 +35,11 @@ public class Message {
         eventPublisher.publish(event);
     }
 
-    @Projection
+    public void delete(UserId authorId, EventPublisher eventPublisher) {
+
+    }
+
+  @Projection
     private class DecisionProjection extends DecisionProjectionBase {
         private MessageId id;
         public Set<UserId> publishers=new HashSet<>();

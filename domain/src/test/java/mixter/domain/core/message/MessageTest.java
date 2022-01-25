@@ -14,95 +14,95 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class MessageTest extends mixter.domain.DomainTest {
-    public String CONTENT = "content";
-    public UserId AUTHOR_ID = new UserId("author@mix-it.fr");
-    public UserId USER_ID = new UserId("user@mix-it.fr");
-    public SpyEventPublisher eventPublisher;
+  public String CONTENT = "content";
+  public UserId AUTHOR_ID = new UserId("author@mix-it.fr");
+  public UserId USER_ID = new UserId("user@mix-it.fr");
+  public SpyEventPublisher eventPublisher;
 
-    @Before
-    public void setUp() throws Exception {
-        eventPublisher = new SpyEventPublisher();
-    }
+  @Before
+  public void setUp() throws Exception {
+    eventPublisher = new SpyEventPublisher();
+  }
 
-    @Test
-    public void whenAMessageIsQuackedThenAMessageQuackedEventisPublished() {
-        // Given
+  @Test
+  public void whenAMessageIsQuackedThenAMessageQuackedEventisPublished() {
+    // Given
 
-        // When
-        MessageId messageId = Message.quack(AUTHOR_ID, CONTENT, eventPublisher);
+    // When
+    MessageId messageId = Message.quack(AUTHOR_ID, CONTENT, eventPublisher);
 
-        // Then
-        MessageQuacked expectedEvent = new MessageQuacked(messageId, CONTENT, AUTHOR_ID);
-        assertThat(eventPublisher.publishedEvents).extracting("message").containsExactly(expectedEvent.getMessage());
-    }
+    // Then
+    MessageQuacked expectedEvent = new MessageQuacked(messageId, CONTENT, AUTHOR_ID);
+    assertThat(eventPublisher.publishedEvents).extracting("message").containsExactly(expectedEvent.getMessage());
+  }
 
-    @Test
-    public void whenAMessageIsRequackedThenItSendsAMessageRequackedEvent() {
-        // Given
-        MessageId messageId = MessageId.generate();
-        Message message = messageFor(
-                new MessageQuacked(messageId, CONTENT, AUTHOR_ID)
-        );
+  @Test
+  public void whenAMessageIsRequackedThenItSendsAMessageRequackedEvent() {
+    // Given
+    MessageId messageId = MessageId.generate();
+    Message message = messageFor(
+        new MessageQuacked(messageId, CONTENT, AUTHOR_ID)
+    );
 
-        // When
-        message.reQuack(USER_ID, eventPublisher, AUTHOR_ID, CONTENT);
+    // When
+    message.reQuack(USER_ID, eventPublisher, AUTHOR_ID, CONTENT);
 
-        // Then
-        MessageRequacked expectedEvent = new MessageRequacked(messageId, USER_ID, AUTHOR_ID, CONTENT);
-        assertThat(eventPublisher.publishedEvents).containsExactly(expectedEvent);
-    }
+    // Then
+    MessageRequacked expectedEvent = new MessageRequacked(messageId, USER_ID, AUTHOR_ID, CONTENT);
+    assertThat(eventPublisher.publishedEvents).containsExactly(expectedEvent);
+  }
 
-    @Test
-    public void whenAMessageIsRequackedByItsAuthorThenItShouldNotSendRequackedEvent() {
-        // Given
-        MessageId messageId = MessageId.generate();
+  @Test
+  public void whenAMessageIsRequackedByItsAuthorThenItShouldNotSendRequackedEvent() {
+    // Given
+    MessageId messageId = MessageId.generate();
 
-        Message message = messageFor(
-                new MessageQuacked(messageId, CONTENT, AUTHOR_ID)
-        );
+    Message message = messageFor(
+        new MessageQuacked(messageId, CONTENT, AUTHOR_ID)
+    );
 
-        // When
-        message.reQuack(AUTHOR_ID, eventPublisher, AUTHOR_ID, CONTENT);
+    // When
+    message.reQuack(AUTHOR_ID, eventPublisher, AUTHOR_ID, CONTENT);
 
-        // Then
-        assertThat(eventPublisher.publishedEvents).isEmpty();
-    }
+    // Then
+    assertThat(eventPublisher.publishedEvents).isEmpty();
+  }
 
-    @Test
-    public void whenAMessageIsRequackedTwiceByTheSameUserThenItShouldNotSendMessageRequackedEvent() {
-        // Given
-        MessageId messageId = MessageId.generate();
-        Message message = messageFor(
-                new MessageQuacked(messageId, CONTENT, AUTHOR_ID),
-                new MessageRequacked(messageId, USER_ID, AUTHOR_ID, CONTENT)
-        );
+  @Test
+  public void whenAMessageIsRequackedTwiceByTheSameUserThenItShouldNotSendMessageRequackedEvent() {
+    // Given
+    MessageId messageId = MessageId.generate();
+    Message message = messageFor(
+        new MessageQuacked(messageId, CONTENT, AUTHOR_ID),
+        new MessageRequacked(messageId, USER_ID, AUTHOR_ID, CONTENT)
+    );
 
-        // When
-        message.reQuack(USER_ID, eventPublisher, AUTHOR_ID, CONTENT);
+    // When
+    message.reQuack(USER_ID, eventPublisher, AUTHOR_ID, CONTENT);
 
-        // Then
-        assertThat(eventPublisher.publishedEvents).isEmpty();
-    }
+    // Then
+    assertThat(eventPublisher.publishedEvents).isEmpty();
+  }
 
-    @Test
-    public void whenAMessageIsDeletedByItsAuthorThenItShouldSendMessageDeletedEvent() {
-        // Given
-        MessageId messageId = MessageId.generate();
-        List<Event> eventHistory = history(
-                new MessageQuacked(messageId, CONTENT, AUTHOR_ID)
-        );
+  @Test
+  public void whenAMessageIsDeletedByItsAuthorThenItShouldSendMessageDeletedEvent() {
+    // Given
+    MessageId messageId = MessageId.generate();
+    List<Event> eventHistory = history(
+        new MessageQuacked(messageId, CONTENT, AUTHOR_ID)
+    );
 
-        Message message = new Message(eventHistory);
+    Message message = new Message(eventHistory);
 
-        // When
-        message.delete(AUTHOR_ID, eventPublisher);
+    // When
+    message.delete(AUTHOR_ID, eventPublisher);
 
-        // Then
-        MessageDeleted expectedEvent = new MessageDeleted(messageId);
-        assertThat(eventPublisher.publishedEvents).containsExactly(expectedEvent);
-    }
+    // Then
+    MessageDeleted expectedEvent = new MessageDeleted(messageId);
+    assertThat(eventPublisher.publishedEvents).containsExactly(expectedEvent);
+  }
 
-    protected Message messageFor(Event... events) {
-        return new Message(history(events));
-    }
+  protected Message messageFor(Event... events) {
+    return new Message(history(events));
+  }
 }
