@@ -33,6 +33,8 @@ public class Message {
     public void reQuack(UserId userId, EventPublisher eventPublisher, UserId authorId, String message) {
         if (projection.publishers.contains(userId)) {
             return;
+        } else if (projection.isDeleted()) {
+            return;
         }
         MessageRequacked event = new MessageRequacked(projection.getId(), userId, authorId, message);
         eventPublisher.publish(event);
