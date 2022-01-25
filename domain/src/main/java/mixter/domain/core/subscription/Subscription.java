@@ -31,15 +31,20 @@ public class Subscription {
     }
 
     public void notifyFollower(MessageId messageId, EventPublisher eventPublisher) {
+        if(!projection.isActive()){
+            return;
+        }
         eventPublisher.publish(new FolloweeMessageQuacked(projection.getSubscriptionId(), messageId));
     }
 
     @Projection
     private class DecisionProjection extends DecisionProjectionBase {
         private SubscriptionId subscriptionId;
+        private boolean active = true;
 
         public DecisionProjection(List<Event> history) {
             super.register(UserFollowed.class, this::apply);
+            super.register(UserUnfollowed.class, this::apply);
             history.forEach(this::apply);
         }
 
@@ -47,8 +52,16 @@ public class Subscription {
             subscriptionId = event.getSubscriptionId();
         }
 
+        public void apply(UserUnfollowed event) {
+            active = false;
+        }
+
         public SubscriptionId getSubscriptionId() {
             return subscriptionId;
+        }
+
+        public boolean isActive() {
+            return active;
         }
     }
 }
