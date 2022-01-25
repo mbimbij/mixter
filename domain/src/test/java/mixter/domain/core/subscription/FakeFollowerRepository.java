@@ -4,11 +4,12 @@ import mixter.domain.identity.UserId;
 import org.assertj.core.util.Maps;
 import org.assertj.core.util.Sets;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 public class FakeFollowerRepository implements FollowerRepository {
-    Map<UserId, Set<UserId>> followers = Maps.newHashMap();
+    Map<UserId, Set<UserId>> followers = new HashMap<>();
 
     @Override
     public Set<UserId> getFollowers(UserId followee) {
