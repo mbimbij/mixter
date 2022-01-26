@@ -72,6 +72,6 @@ public class InMemorySubscriptionRepositoryTest {
 
         Iterator<Subscription> subscriptions = subscriptionRepository.getSubscriptionsOfUser(followee);
 
-        assertThat(subscriptions).hasSize(2);
+        assertThat(subscriptions).toIterable().hasSize(2);
     }
 }

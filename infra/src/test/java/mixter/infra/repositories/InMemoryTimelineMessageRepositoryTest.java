@@ -21,7 +21,7 @@ public class InMemoryTimelineMessageRepositoryTest {
         TimelineMessageProjection timelineProjection = new TimelineMessageProjection(OWNER_ID, AUTHOR_ID, "Hello", messageId);
         repository.save(timelineProjection);
 
-        assertThat(repository.getMessageOfUser(OWNER_ID)).containsExactly(timelineProjection);
+        assertThat(repository.getMessageOfUser(OWNER_ID)).toIterable().containsExactly(timelineProjection);
     }
 
     @Test
@@ -34,7 +34,7 @@ public class InMemoryTimelineMessageRepositoryTest {
         repository.save(joeMessage);
         repository.save(aliceMessage);
 
-        assertThat(repository.getMessageOfUser(OWNER_ID)).containsExactly(joeMessage);
+        assertThat(repository.getMessageOfUser(OWNER_ID)).toIterable().containsExactly(joeMessage);
     }
 
     @Test
@@ -46,11 +46,11 @@ public class InMemoryTimelineMessageRepositoryTest {
         repository.save(joeMessage);
         repository.save(joeMessage);
 
-        assertThat(repository.getMessageOfUser(OWNER_ID)).containsOnlyOnce(joeMessage);
+        assertThat(repository.getMessageOfUser(OWNER_ID)).toIterable().containsOnlyOnce(joeMessage);
     }
 
     @Test
-    public void giventAMessageSavedForSeveralUsersWhenRemoveThisMessageThenRemoveForAllUsers() throws Exception {
+    public void givenAMessageSavedForSeveralUsersWhenRemoveThisMessageThenRemoveForAllUsers() throws Exception {
         TimelineMessageRepository repository = new InMemoryTimelineMessageRepository();
         MessageId messageId = MessageId.generate();
 
@@ -61,7 +61,7 @@ public class InMemoryTimelineMessageRepositoryTest {
 
         repository.delete(messageId);
 
-        assertThat(repository.getMessageOfUser(OWNER_ID)).isEmpty();
-        assertThat(repository.getMessageOfUser(ALICE_ID)).isEmpty();
+        assertThat(repository.getMessageOfUser(OWNER_ID)).toIterable().isEmpty();
+        assertThat(repository.getMessageOfUser(ALICE_ID)).toIterable().isEmpty();
     }
 }
