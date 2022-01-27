@@ -81,7 +81,7 @@ public class UpdateTimelineTest {
 
         @Override
         public void delete(MessageId messageId) {
-
+            deletedMessageIds.add(messageId);
         }
     }
 }

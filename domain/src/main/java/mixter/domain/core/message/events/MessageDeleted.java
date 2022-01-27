@@ -17,4 +17,8 @@ public class MessageDeleted implements Event {
   public AggregateId getId() {
     return messageId;
   }
+
+  public MessageId getMessageId() {
+    return messageId;
+  }
 }
